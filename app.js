@@ -27,7 +27,7 @@ function statCard(value, label, sub, highlight) {
 }
 
 function kpiRowHTML(kpi, highlight) {
-  return `<div class="kpi-row ${highlight ? 'highlight' : ''}">
+  return `<div class="kpi-row ${highlight ? 'highlight' : ''}" data-key="${kpi.key}">
     <div class="kpi-main">
       <div class="kpi-label">${kpi.label}</div>
       <div class="kpi-value">${kpi.value}</div>
@@ -64,23 +64,15 @@ function columnChartHTML(items) {
   }).join('')}</div>`;
 }
 
-/* ---------- Tab 1: Overview — sessions, headline KPIs, subagent mix ---------- */
+/* ---------- Tab 1: Overview — headline KPIs (click one to plot it), sessions chart, subagent mix ---------- */
+let ovSelectedKpi = null;
+
 function renderOverview() {
   const cohort = SHOPPER_AGENT_DATA.cohorts.agent;
-  const series = cohort.dailySessions.map((v, i) => ({ label: SHOPPER_AGENT_DATA.weekLabels[i], value: v }));
-  const total = cohort.dailySessions.reduce((a, b) => a + b, 0);
-  const avg = Math.round(total / cohort.dailySessions.length);
+  if (!ovSelectedKpi) ovSelectedKpi = cohort.kpis[0].key;
 
-  const chartHTML = `<div class="card">
-    ${cardHeader('Shopping Agent Sessions', { info: 'Daily agent sessions, last 7 days' })}
-    <div class="chart-card-header">
-      <div class="chart-big-number">${fmtNum(total)}</div>
-      <div class="chart-avg-number">${fmtNum(avg)} average</div>
-    </div>
-    ${renderLineChart(series)}
-  </div>`;
-
-  const kpiHTML = `<div class="card kpi-stack">${cohort.kpis.map((k, i) => kpiRowHTML(k, i === 0)).join('')}</div>`;
+  const chartHTML = `<div class="card" id="ov-chart"></div>`;
+  const kpiHTML = `<div class="card kpi-stack">${cohort.kpis.map(k => kpiRowHTML(k, k.key === ovSelectedKpi)).join('')}</div>`;
 
   const subagentsHTML = `<div class="card">
     ${cardHeader('Top Subagents', { info: 'Sessions and revenue handled by each subagent' })}
@@ -94,6 +86,51 @@ function renderOverview() {
       <div style="flex:1">${kpiHTML}</div>
     </div>
     ${subagentsHTML}
+  `;
+
+  renderOverviewChart();
+
+  // Click a KPI card to plot its daily series — mirrors the real Home dashboard's metric selector.
+  document.querySelector('#panel-overview .kpi-stack').onclick = e => {
+    const row = e.target.closest('.kpi-row');
+    if (!row) return;
+    ovSelectedKpi = row.dataset.key;
+    document.querySelectorAll('#panel-overview .kpi-row').forEach(r =>
+      r.classList.toggle('highlight', r.dataset.key === ovSelectedKpi));
+    renderOverviewChart();
+  };
+}
+
+function renderOverviewChart() {
+  const cohort = SHOPPER_AGENT_DATA.cohorts.agent;
+  const rev = SHOPPER_AGENT_DATA.revenue;
+  const labels = SHOPPER_AGENT_DATA.weekLabels;
+  const kpi = cohort.kpis.find(k => k.key === ovSelectedKpi) || cohort.kpis[0];
+
+  // Daily series behind each headline KPI. Sessions/Revenue/AOV reuse arrays already reconciled elsewhere in
+  // the data set; Conversion Rate is derived per-day from orders ÷ sessions, so it ties to the same anchors.
+  const seriesByKey = {
+    sessions: cohort.dailySessions,
+    revenue: rev.dailyRevenue,
+    conversionRate: cohort.dailySessions.map((s, i) => +(rev.dailyOrders[i] / s * 100).toFixed(2)),
+    aov: rev.aovAgent
+  };
+  const captionByKey = {
+    sessions: 'agent sessions this week',
+    revenue: 'agent-attributed revenue this week',
+    conversionRate: 'of agent sessions converted to an order',
+    aov: 'average agent order value this week'
+  };
+  const raw = seriesByKey[kpi.key] || cohort.dailySessions;
+  const series = raw.map((v, i) => ({ label: labels[i], value: v }));
+
+  document.getElementById('ov-chart').innerHTML = `
+    ${cardHeader(kpi.label, { info: 'Daily ' + kpi.label.toLowerCase() + ', last 7 days' })}
+    <div class="chart-card-header">
+      <div class="chart-big-number">${kpi.value}</div>
+      <div class="chart-avg-number">${captionByKey[kpi.key] || ''}</div>
+    </div>
+    ${renderLineChart(series)}
   `;
 }
 
@@ -412,14 +449,10 @@ function renderProducts() {
       pd.products.map(p => [p.name, fmtNum(p.views), fmtNum(p.addToCarts), barCell(p.atcRate + '%', p.atcRate / maxAtc * 100)]))}</div>
   </div>`;
 
-  const cmp = pe.comparison;
   const mc = SHOPPER_AGENT_DATA.mostComparedProducts;
   const maxCmp = Math.max(...mc.map(p => p.count));
   const comparisonHTML = `<div class="card">
     ${cardHeader('Product Comparison', { info: 'Head-to-head comparisons requested via the agent, ranked by pair' })}
-    <div class="stat-callout">${fmtNum(cmp.comparisons)} comparisons
-      <span class="stat-callout-sub">across ${fmtNum(cmp.sessions)} sessions</span>
-    </div>
     ${renderTable(['Product Pair', 'Comparisons ↓'],
       mc.map(p => [p.pair, barCell(fmtNum(p.count), p.count / maxCmp * 100)]))}
   </div>`;

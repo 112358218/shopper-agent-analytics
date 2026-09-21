@@ -117,9 +117,10 @@ body {
 
 /* KPI stack */
 .kpi-stack { padding: 6px; }
-.kpi-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; }
+.kpi-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; cursor: pointer; transition: background .12s; }
 .kpi-row + .kpi-row { margin-top: 2px; }
-.kpi-row.highlight { background: var(--sa-blue-tint); }
+.kpi-row:hover { background: #f5f8fb; }
+.kpi-row.highlight, .kpi-row.highlight:hover { background: var(--sa-blue-tint); }
 .kpi-main { flex: 1; }
 .kpi-label { font-size: 11px; color: var(--sa-text-muted); text-transform: uppercase; letter-spacing: .3px; }
 .kpi-value { font-size: 19px; font-weight: 700; color: var(--sa-text); margin-top: 2px; }
