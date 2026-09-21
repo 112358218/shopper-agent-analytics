@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports &amp; Dashboards — Shopper Agent</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#0176d3"><path d="M19 15.3c-.3-2.3-2.3-4-4.6-4-.4 0-.8 0-1.2.1C12.4 9.6 10.7 8.4 8.9 8.4c-2.5 0-4.5 2-4.5 4.5 0 .1 0 .3.1.4C2.9 13.7 1.5 15.3 1.5 17.2c0 2.1 1.8 3.9 4 3.9h13c2 0 3.5-1.5 3.5-3.4 0-1.6-1.2-3-2.8-3.4z"/></svg>
+    <span class="app-title">Reports &amp; Dashboards</span>
+  </div>
+  <nav class="main-nav">
+    <button class="nav-tab">Home</button>
+    <button class="nav-tab">Sales</button>
+    <button class="nav-tab">Products</button>
+    <button class="nav-tab">Promotions</button>
+    <button class="nav-tab">On-Site Search</button>
+    <button class="nav-tab">Inventory</button>
+    <button class="nav-tab">Traffic</button>
+    <button class="nav-tab active">Shopper Agent</button>
+    <button class="nav-tab">Einstein</button>
+    <button class="nav-tab">Technical</button>
+    <button class="nav-tab">Real-Time</button>
+  </nav>
+  <div class="topbar-right">
+    <span class="realm-label">Realm:<span class="realm-value">aamb_prd <span class="caret">&#9662;</span></span></span>
+    <span class="icon-btn" title="Help">&#63;</span>
+    <span class="icon-btn" title="Settings">&#9881;</span>
+    <span class="avatar">RT</span>
+  </div>
+</header>
+
+<div class="page-toolbar">
+  <div class="page-title-block">
+    <div class="page-icon">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="12" width="4" height="8" fill="#fff"/>
+        <rect x="10" y="7" width="4" height="13" fill="#fff"/>
+        <rect x="17" y="3" width="4" height="17" fill="#fff"/>
+      </svg>
+    </div>
+    <div>
+      <div class="page-title">SHOPPER AGENT DASHBOARD</div>
+      <div class="page-subtitle">Agent Session Performance</div>
+    </div>
+  </div>
+  <div class="page-toolbar-right">
+    <span class="tz-label">Time Zone: GMT</span>
+    <button class="date-range-btn">Sep 14, 2026 - Sep 20, 2026 <span class="caret">&#9662;</span></button>
+    <button class="filter-btn">Filter by... <span class="caret">&#9662;</span></button>
+  </div>
+</div>
+
+<nav class="subtab-row">
+  <button class="subtab active" data-subtab="overview">Overview</button>
+  <button class="subtab" data-subtab="sessions">Session Flow</button>
+  <button class="subtab" data-subtab="revenue">Revenue</button>
+  <button class="subtab" data-subtab="adoption">Adoption</button>
+  <button class="subtab" data-subtab="products">Product &amp; Search</button>
+  <button class="subtab" data-subtab="cart">Cart</button>
+</nav>
+
+<main class="page-content">
+  <section class="subtab-panel active" id="panel-overview"></section>
+  <section class="subtab-panel" id="panel-sessions"></section>
+  <section class="subtab-panel" id="panel-revenue"></section>
+  <section class="subtab-panel" id="panel-adoption"></section>
+  <section class="subtab-panel" id="panel-products"></section>
+  <section class="subtab-panel" id="panel-cart"></section>
+</main>
+
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
